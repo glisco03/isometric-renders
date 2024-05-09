@@ -16,6 +16,7 @@ import io.wispforest.owo.ui.core.Sizing;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
 import java.util.List;
 
@@ -166,7 +167,7 @@ public class BatchRenderable<R extends Renderable<?>> implements Renderable<Batc
         }
 
         @Override
-        public void applyToViewMatrix(MatrixStack modelViewStack) {
+        public void applyToViewMatrix(Matrix4fStack modelViewStack) {
             this.delegate.applyToViewMatrix(modelViewStack);
         }
 

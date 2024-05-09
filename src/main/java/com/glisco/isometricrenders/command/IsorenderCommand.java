@@ -65,7 +65,7 @@ public class IsorenderCommand {
                                 .executes(IsorenderCommand::renderBlockWithArgument)))
                 .then(literal("entity")
                         .executes(IsorenderCommand::renderTargetedEntity)
-                        .then(argument("entity", RegistryEntryArgumentType.registryEntry(access, RegistryKeys.ENTITY_TYPE))
+                        .then(argument("entity", RegistryEntryReferenceArgumentType.registryEntry(access, RegistryKeys.ENTITY_TYPE))
                                 .suggests(CLIENT_SUMMONABLE_ENTITIES)
                                 .executes(IsorenderCommand::renderEntityWithoutNbt)
                                 .then(argument("nbt", NbtCompoundArgumentType.nbtCompound())

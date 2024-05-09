@@ -12,6 +12,7 @@ import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.joml.Vector4f;
 
 import java.util.function.Consumer;
@@ -27,14 +28,14 @@ public class RenderableDispatcher {
      * @param aspectRatio The aspect ratio of the current framebuffer
      * @param tickDelta   The tick delta to use
      */
-    public static void drawIntoActiveFramebuffer(Renderable<?> renderable, float aspectRatio, float tickDelta, Consumer<MatrixStack> transformer) {
+    public static void drawIntoActiveFramebuffer(Renderable<?> renderable, float aspectRatio, float tickDelta, Consumer<Matrix4fStack> transformer) {
 
         renderable.prepare();
 
         // Prepare model view matrix
         final var modelViewStack = RenderSystem.getModelViewStack();
-        modelViewStack.push();
-        modelViewStack.loadIdentity();
+        modelViewStack.pushMatrix();
+        modelViewStack.identity();
 
         transformer.accept(modelViewStack);
 
@@ -46,7 +47,7 @@ public class RenderableDispatcher {
 
         // Unproject to get the camera position for vertex sorting
         var camPos = new Vector4f(0, 0, 0, 1);
-        camPos.mul(new Matrix4f(projectionMatrix).invert()).mul(new Matrix4f(modelViewStack.peek().getPositionMatrix()).invert());
+        camPos.mul(new Matrix4f(projectionMatrix).invert()).mul(new Matrix4f(modelViewStack).invert());
         RenderSystem.setProjectionMatrix(projectionMatrix, VertexSorter.byDistance(-camPos.x, -camPos.y, -camPos.z));
 
         IsometricRenders.beginRenderableDraw();
@@ -60,12 +61,12 @@ public class RenderableDispatcher {
             );
 
             // --> Draw
-            renderable.draw(modelViewStack.peek().getPositionMatrix());
+            renderable.draw(modelViewStack);
         });
 
         IsometricRenders.endRenderableDraw();
 
-        modelViewStack.pop();
+        modelViewStack.popMatrix();
         RenderSystem.applyModelViewMatrix();
 
         renderable.cleanUp();

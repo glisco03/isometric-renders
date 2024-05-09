@@ -6,6 +6,7 @@ import io.wispforest.owo.ui.container.FlowLayout;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
 public class EmptyRenderable implements Renderable<PropertyBundle> {
 
@@ -14,7 +15,7 @@ public class EmptyRenderable implements Renderable<PropertyBundle> {
         public void buildGuiControls(Renderable<?> renderable, FlowLayout container) {}
 
         @Override
-        public void applyToViewMatrix(MatrixStack modelViewStack) {}
+        public void applyToViewMatrix(Matrix4fStack modelViewStack) {}
     };
 
     @Override

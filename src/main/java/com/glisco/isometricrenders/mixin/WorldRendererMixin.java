@@ -2,6 +2,7 @@ package com.glisco.isometricrenders.mixin;
 
 import com.glisco.isometricrenders.IsometricRenders;
 import com.glisco.isometricrenders.util.AreaSelectionHelper;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
@@ -25,7 +26,7 @@ public class WorldRendererMixin {
     private MinecraftClient client;
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    public void dontRenderInScreen(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f positionMatrix, CallbackInfo ci) {
+    public void dontRenderInScreen(float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
         if (!IsometricRenders.skipWorldRender) return;
 
         IsometricRenders.skipWorldRender = false;
@@ -33,7 +34,7 @@ public class WorldRendererMixin {
     }
 
     @Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;crosshairTarget:Lnet/minecraft/util/hit/HitResult;", opcode = Opcodes.GETFIELD, ordinal = 1))
-    public void drawAreaSelection(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
+    public void drawAreaSelection(float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci, @Local(ordinal = 0) MatrixStack matrices) {
         AreaSelectionHelper.renderSelectionBox(matrices, camera);
     }
 

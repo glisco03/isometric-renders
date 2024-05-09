@@ -22,6 +22,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
 public class AreaRenderable extends DefaultRenderable<AreaRenderable.AreaPropertyBundle> {
 
@@ -86,14 +87,7 @@ public class AreaRenderable extends DefaultRenderable<AreaRenderable.AreaPropert
         var diff = Vec3d.of(mesh.startPos()).subtract(client.player.getPos());
         matrices.translate(-diff.x, -diff.y + 1.65, -diff.z);
 
-        withParticleCamera(camera -> {
-            client.particleManager.renderParticles(matrices,
-                    (VertexConsumerProvider.Immediate) vertexConsumers,
-                    client.gameRenderer.getLightmapTextureManager(),
-                    camera,
-                    tickDelta
-            );
-        });
+        this.renderParticles(matrices.peek().getPositionMatrix(), tickDelta);
     }
 
     @Override
@@ -172,14 +166,14 @@ public class AreaRenderable extends DefaultRenderable<AreaRenderable.AreaPropert
         }
 
         @Override
-        public void applyToViewMatrix(MatrixStack modelViewStack) {
+        public void applyToViewMatrix(Matrix4fStack modelViewStack) {
             final float scale = this.scale.get() / 1000f;
             modelViewStack.scale(scale, scale, scale);
 
-            modelViewStack.translate(this.xOffset.get() / 2600d, this.yOffset.get() / -2600d, 0);
+            modelViewStack.translate(this.xOffset.get() / 2600f, this.yOffset.get() / -2600f, 0);
 
-            modelViewStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(this.slant.get()));
-            modelViewStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(this.rotation.get()));
+            modelViewStack.rotate(RotationAxis.POSITIVE_X.rotationDegrees(this.slant.get()));
+            modelViewStack.rotate(RotationAxis.POSITIVE_Y.rotationDegrees(this.rotation.get()));
 
             this.updateAndApplyRotationOffset(modelViewStack);
         }

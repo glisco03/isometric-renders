@@ -12,6 +12,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix4fStack;
 
 public class TooltipRenderable extends DefaultRenderable<TooltipRenderable.TooltipPropertyBundle> {
 
@@ -50,13 +51,13 @@ public class TooltipRenderable extends DefaultRenderable<TooltipRenderable.Toolt
         }
 
         @Override
-        public void applyToViewMatrix(MatrixStack modelViewStack) {
+        public void applyToViewMatrix(Matrix4fStack modelViewStack) {
             final float scale = this.scale.get() / 10000f;
             modelViewStack.scale(scale, scale, -scale);
 
-            modelViewStack.translate(this.xOffset.get() / 260d, this.yOffset.get() / -260d, 0);
-            modelViewStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
-            modelViewStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
+            modelViewStack.translate(this.xOffset.get() / 260f, this.yOffset.get() / -260f, 0);
+            modelViewStack.rotate(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+            modelViewStack.rotate(RotationAxis.POSITIVE_Z.rotationDegrees(180));
         }
     }
 }

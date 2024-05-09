@@ -28,6 +28,25 @@ public abstract class DefaultRenderable<P extends DefaultPropertyBundle> impleme
         MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().draw();
     }
 
+    protected void renderParticles(Matrix4f transform, float tickDelta) {
+        var modelView = RenderSystem.getModelViewStack();
+        modelView.pushMatrix();
+        modelView.mul(transform);
+        RenderSystem.applyModelViewMatrix();
+
+        var client = MinecraftClient.getInstance();
+        this.withParticleCamera(camera -> {
+            client.particleManager.renderParticles(
+                    client.gameRenderer.getLightmapTextureManager(),
+                    camera,
+                    tickDelta
+            );
+        });
+
+        modelView.popMatrix();
+        RenderSystem.applyModelViewMatrix();
+    }
+
     protected void withParticleCamera(Consumer<Camera> action) {
         Camera camera = MinecraftClient.getInstance().getEntityRenderDispatcher().camera;
         float previousYaw = camera.getYaw(), previousPitch = camera.getPitch();

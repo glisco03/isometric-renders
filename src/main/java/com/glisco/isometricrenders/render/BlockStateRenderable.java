@@ -53,7 +53,7 @@ public class BlockStateRenderable extends DefaultRenderable<DefaultPropertyBundl
     public static BlockStateRenderable copyOf(World world, BlockPos pos) {
         final var state = world.getBlockState(pos);
         final var data = world.getBlockEntity(pos) != null
-                ? world.getBlockEntity(pos).createNbt()
+                ? world.getBlockEntity(pos).createNbt(world.getRegistryManager())
                 : null;
 
         return of(state, data);
@@ -79,15 +79,7 @@ public class BlockStateRenderable extends DefaultRenderable<DefaultPropertyBundl
         if (zOffset < 0) zOffset += 1;
 
         matrices.translate(xOffset, 1.65 + this.client.player.getY() % 1d, zOffset);
-
-        withParticleCamera(camera -> {
-            this.client.particleManager.renderParticles(matrices,
-                    (VertexConsumerProvider.Immediate) vertexConsumers,
-                    this.client.gameRenderer.getLightmapTextureManager(),
-                    camera,
-                    tickDelta
-            );
-        });
+        this.renderParticles(matrices.peek().getPositionMatrix(), tickDelta);
 
         matrices.pop();
     }
@@ -139,6 +131,6 @@ public class BlockStateRenderable extends DefaultRenderable<DefaultPropertyBundl
         nbtCopy.putInt("y", 0);
         nbtCopy.putInt("z", 0);
 
-        blockEntity.readNbt(nbtCopy);
+        blockEntity.read(nbtCopy, MinecraftClient.getInstance().world.getRegistryManager());
     }
 }

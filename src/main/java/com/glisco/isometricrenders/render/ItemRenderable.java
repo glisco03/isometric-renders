@@ -16,21 +16,24 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix4fStack;
 
 public class ItemRenderable extends DefaultRenderable<DefaultPropertyBundle> {
 
     private static BakedModel currentModel = null;
     private static final DefaultPropertyBundle PROPERTIES = new DefaultPropertyBundle() {
         @Override
-        public void applyToViewMatrix(MatrixStack modelViewStack) {
+        public void applyToViewMatrix(Matrix4fStack modelViewStack) {
             final float scale = (this.scale.get() / 100f) * (currentModel != null && currentModel.hasDepth() ? 2f : 1.75f);
             modelViewStack.scale(scale, scale, scale);
 
-            modelViewStack.translate(this.xOffset.get() / 26000d, this.yOffset.get() / -26000d, 0);
+            modelViewStack.translate(this.xOffset.get() / 26000f, this.yOffset.get() / -26000f, 0);
 
-            modelViewStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(this.slant.get()));
-            if (currentModel != null) currentModel.getTransformation().getTransformation(ModelTransformationMode.GUI).apply(false, modelViewStack);
-            modelViewStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(this.rotation.get()));
+            modelViewStack.rotate(RotationAxis.POSITIVE_X.rotationDegrees(this.slant.get()));
+            var bruhMatrices = new MatrixStack();
+            if (currentModel != null) currentModel.getTransformation().getTransformation(ModelTransformationMode.GUI).apply(false, bruhMatrices);
+            modelViewStack.mul(bruhMatrices.peek().getPositionMatrix());
+            modelViewStack.rotate(RotationAxis.POSITIVE_Y.rotationDegrees(this.rotation.get()));
 
             this.updateAndApplyRotationOffset(modelViewStack);
         }

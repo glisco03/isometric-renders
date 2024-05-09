@@ -28,7 +28,7 @@ public class TagArgumentType implements ArgumentType<TagArgumentType.TagArgument
     private final RegistryWrapper<Item> registryWrapper;
 
     public TagArgumentType(CommandRegistryAccess registryAccess) {
-        this.registryWrapper = registryAccess.createWrapper(RegistryKeys.ITEM);
+        this.registryWrapper = registryAccess.getWrapperOrThrow(RegistryKeys.ITEM);
     }
 
     public static <S> TagArgument getTag(String name, CommandContext<S> context) {

@@ -10,8 +10,8 @@ import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.Insets;
 import io.wispforest.owo.ui.core.Sizing;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix4fStack;
 
 public class DefaultPropertyBundle implements PropertyBundle {
 
@@ -63,14 +63,14 @@ public class DefaultPropertyBundle implements PropertyBundle {
     }
 
     @Override
-    public void applyToViewMatrix(MatrixStack modelViewStack) {
+    public void applyToViewMatrix(Matrix4fStack modelViewStack) {
         final float scale = this.scale.get() / 100f;
         modelViewStack.scale(scale, scale, scale);
 
-        modelViewStack.translate(this.xOffset.get() / 26000d, this.yOffset.get() / -26000d, 0);
+        modelViewStack.translate(this.xOffset.get() / 26000f, this.yOffset.get() / -26000f, 0);
 
-        modelViewStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(this.slant.get()));
-        modelViewStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(this.rotation.get()));
+        modelViewStack.rotate(RotationAxis.POSITIVE_X.rotationDegrees(this.slant.get()));
+        modelViewStack.rotate(RotationAxis.POSITIVE_Y.rotationDegrees(this.rotation.get()));
 
         this.updateAndApplyRotationOffset(modelViewStack);
     }
@@ -79,13 +79,13 @@ public class DefaultPropertyBundle implements PropertyBundle {
         return this.rotationOffset;
     }
 
-    protected void updateAndApplyRotationOffset(MatrixStack modelViewStack) {
+    protected void updateAndApplyRotationOffset(Matrix4fStack modelViewStack) {
         if (rotationSpeed.get() != 0) {
             if (!this.rotationOffsetUpdated) {
                 rotationOffset += MinecraftClient.getInstance().getLastFrameDuration() * rotationSpeed.get() * .1f;
                 this.rotationOffsetUpdated = true;
             }
-            modelViewStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationOffset));
+            modelViewStack.rotate(RotationAxis.POSITIVE_Y.rotationDegrees(rotationOffset));
         } else {
             rotationOffset = 0;
         }
