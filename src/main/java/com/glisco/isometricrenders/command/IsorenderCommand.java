@@ -8,8 +8,11 @@ import com.glisco.isometricrenders.render.*;
 import com.glisco.isometricrenders.screen.RenderScreen;
 import com.glisco.isometricrenders.screen.ScreenScheduler;
 import com.glisco.isometricrenders.util.AreaSelectionHelper;
+import com.glisco.isometricrenders.util.InstantRenderer;
+import com.glisco.isometricrenders.util.OutputPathBuilder;
 import com.glisco.isometricrenders.util.Translate;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -22,6 +25,7 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.*;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -78,8 +82,22 @@ public class IsorenderCommand {
                                         .executes(IsorenderCommand::renderPlayerWithNbt))))
                 .then(literal("item")
                         .executes(IsorenderCommand::renderHeldItem)
+                        .then(literal("selection")
+                                .then(argument("folder", StringArgumentType.string())
+                                        .then(argument("name", StringArgumentType.string())
+                                                .executes(IsorenderCommand::renderItemWithNbtAndOutput))
+                                        )
+                                .then(argument("folder", StringArgumentType.string())
+                                        .then(argument("name", StringArgumentType.string())
+                                                .then(argument("silent", BoolArgumentType.bool())
+                                                        .executes(IsorenderCommand::renderItemWithNbtAndOutput))
+                                )))
                         .then(argument("item", ItemStackArgumentType.itemStack(access))
-                                .executes(IsorenderCommand::renderItemWithArgument)))
+                                .executes(IsorenderCommand::renderItemWithArgument)
+                                .then(argument("folder", StringArgumentType.string())
+                                        .then(argument("name", StringArgumentType.string())
+                                                .executes(IsorenderCommand::renderItemWithArgumentAndOutput))
+                                        )))
                 .then(literal("tooltip")
                         .executes(IsorenderCommand::renderHeldItemTooltip)
                         .then(argument("item", ItemStackArgumentType.itemStack(access))
@@ -216,6 +234,56 @@ public class IsorenderCommand {
         ScreenScheduler.schedule(new RenderScreen(
                 new ItemRenderable(ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false))
         ));
+        return 0;
+    }
+
+    private static ItemStack getItemToRender() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        ItemStack item = client.player.getMainHandStack();
+
+        if (item.isEmpty()) {
+            // Attempt to get item from targeted ItemFrame
+            ItemFrameEntity itemFrame = client.targetedEntity instanceof ItemFrameEntity ?
+                    (ItemFrameEntity) client.targetedEntity : null;
+            if (itemFrame != null) {
+                item = itemFrame.getHeldItemStack();
+            }
+        }
+
+        return item.isEmpty() ? null : item;
+    }
+
+    private static void render(ItemRenderable renderable, CommandContext<FabricClientCommandSource> context) {
+        boolean renderSilent;
+        try {
+            renderSilent = BoolArgumentType.getBool(context, "silent");
+        } catch (Exception e) {
+            renderSilent = false;
+        }
+        if (renderSilent) {
+            InstantRenderer.render(renderable);
+        } else {
+            ScreenScheduler.schedule(new RenderScreen(renderable));
+        }
+    }
+
+    private static int renderItemWithNbtAndOutput(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
+        ItemStack item = getItemToRender();
+        ItemRenderable renderable = new ItemRenderable(item);
+        OutputPathBuilder builder = new OutputPathBuilder(renderable, context);
+        String result = builder.appendToRenderable();
+        if (result != null) {
+            return 1;
+        }
+        render(renderable, context);
+        return 0;
+    }
+
+    private static int renderItemWithArgumentAndOutput(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
+        ItemRenderable renderable = new ItemRenderable(ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, false));
+        OutputPathBuilder builder = new OutputPathBuilder(renderable, context);
+        builder.appendToRenderable();
+        render(renderable, context);
         return 0;
     }
 

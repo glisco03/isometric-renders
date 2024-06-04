@@ -22,9 +22,14 @@ public class ItemRenderable extends DefaultRenderable<DefaultPropertyBundle> {
     }
 
     private final ItemStack stack;
+    private ExportPathSpec exportPath;
 
     public ItemRenderable(ItemStack stack) {
         this.stack = stack;
+        this.exportPath = ExportPathSpec.ofIdentified(
+                Registries.ITEM.getId(this.stack.getItem()),
+                "item"
+        );
     }
 
     @Override
@@ -58,9 +63,14 @@ public class ItemRenderable extends DefaultRenderable<DefaultPropertyBundle> {
 
     @Override
     public ExportPathSpec exportPath() {
-        return ExportPathSpec.ofIdentified(
-                Registries.ITEM.getId(this.stack.getItem()),
-                "item"
-        );
+        return this.exportPath;
+    }
+
+    public ItemStack stack(){
+        return this.stack;
+    }
+
+    public void exportPath(String rootOffset, String path){
+        this.exportPath = ExportPathSpec.forced(rootOffset, path);
     }
 }
