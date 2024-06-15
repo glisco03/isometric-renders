@@ -323,7 +323,7 @@ public class RenderScreen extends BaseOwoScreen<FlowLayout> {
         }
 
         final var window = client.getWindow();
-        final var effectiveTickDelta = playAnimations.get() ? client.getTickDelta() : 0;
+        final var effectiveTickDelta = playAnimations.get() ? client.getRenderTickCounter().getTickDelta(false) : 0;
         RenderableDispatcher.drawIntoActiveFramebuffer(
                 this.renderable,
                 window.getFramebufferWidth() / (float) window.getFramebufferHeight(),

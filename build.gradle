@@ -12,7 +12,7 @@ base {
 }
 
 repositories {
-    maven { url "https://maven.wispforest.io" }
+    maven { url "https://maven.wispforest.io/releases/" }
 }
 
 loom {
@@ -46,14 +46,14 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 17
+    it.options.release = 21
 }
 
 java {
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {

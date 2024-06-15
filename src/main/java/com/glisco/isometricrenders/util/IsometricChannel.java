@@ -21,7 +21,7 @@ public class IsometricChannel extends ExoCommandChannel {
         addCommand("render-item", (port, arguments) -> {
             if (arguments.length < 1) return Exo.join("error", "missing item id");
 
-            final var id = new Identifier(arguments[0]);
+            final var id = Identifier.of(arguments[0]);
             final var client = MinecraftClient.getInstance();
 
             if (Registries.ITEM.containsId(id)) {

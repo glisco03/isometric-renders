@@ -20,7 +20,7 @@ public class MinecraftClientMixin {
         ci.cancel();
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderTickCounter;beginRenderTick(J)I"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderTickCounter$Dynamic;beginRenderTick(JZ)I"))
     private void onRenderStart(boolean tick, CallbackInfo ci) {
         ClientRenderCallback.EVENT.invoker().onRenderStart((MinecraftClient) (Object) this);
     }

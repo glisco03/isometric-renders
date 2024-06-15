@@ -52,7 +52,7 @@ public class IsometricRenders implements ClientModInitializer {
         final var ioStateId = "io-state";
         final var areaSelectionHintId = "area-selection-hint";
 
-        var hudId = new Identifier("isometric-renders", "hud");
+        var hudId = Identifier.of("isometric-renders", "hud");
         Hud.add(hudId, () -> Containers.verticalFlow(Sizing.content(), Sizing.content()).positioning(Positioning.absolute(20, 20)));
 
         HudRenderCallback.EVENT.register((matrixStack, tickDelta) -> {
