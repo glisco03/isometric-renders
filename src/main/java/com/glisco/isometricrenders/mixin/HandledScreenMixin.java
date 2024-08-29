@@ -15,11 +15,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(HandledScreen.class)
-public class HandledScreenMixin<T extends ScreenHandler> extends Screen {
+public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen {
 
     @Shadow
     @Final
     protected T handler;
+
+    @Shadow
+    public abstract void close();
 
     protected HandledScreenMixin(Text title) {
         super(title);
@@ -29,7 +32,9 @@ public class HandledScreenMixin<T extends ScreenHandler> extends Screen {
     public void renderInventory(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (keyCode != GLFW.GLFW_KEY_F12 || !Screen.hasControlDown()) return;
 
+        this.close();
         client.setScreen(new SelectRenderTaskScreen(handler.slots.stream().map(Slot::getStack).filter(stack -> !stack.isEmpty()).toList()));
+
         cir.setReturnValue(false);
     }
 
