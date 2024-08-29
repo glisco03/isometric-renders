@@ -92,4 +92,10 @@ public class SelectRenderTaskScreen extends BaseOwoScreen<FlowLayout> {
         mainPanel.child(contentPanel);
         rootComponent.child(mainPanel);
     }
+
+    @Override
+    public boolean shouldPause() {
+        return false;
+    }
+
 }
