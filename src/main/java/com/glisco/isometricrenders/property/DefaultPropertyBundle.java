@@ -2,6 +2,7 @@ package com.glisco.isometricrenders.property;
 
 import com.glisco.isometricrenders.render.Renderable;
 import com.glisco.isometricrenders.screen.IsometricUI;
+import com.glisco.isometricrenders.screen.RenderScreen;
 import com.glisco.isometricrenders.util.ClientRenderCallback;
 import com.glisco.isometricrenders.util.Translate;
 import io.wispforest.owo.ui.component.ButtonComponent;
@@ -87,7 +88,9 @@ public class DefaultPropertyBundle implements PropertyBundle {
     protected void updateAndApplyRotationOffset(Matrix4fStack modelViewStack) {
         if (rotationSpeed.get() != 0) {
             if (!this.rotationOffsetUpdated) {
-                rotationOffset += MinecraftClient.getInstance().getRenderTickCounter().getLastFrameDuration() * rotationSpeed.get() * .1f;
+                float dur = MinecraftClient.getInstance().currentScreen instanceof RenderScreen rs && rs.remainingAnimationFrames > 0
+                        ? 20F / GlobalProperties.exportFramerate : MinecraftClient.getInstance().getRenderTickCounter().getLastFrameDuration();
+                rotationOffset += dur * rotationSpeed.get() * .1f;
                 this.rotationOffsetUpdated = true;
             }
             modelViewStack.rotate(RotationAxis.POSITIVE_Y.rotationDegrees(rotationOffset));

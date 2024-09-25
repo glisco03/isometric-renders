@@ -97,7 +97,7 @@ public class RenderScreen extends BaseOwoScreen<FlowLayout> {
     private final FlowLayout rightColumn = Containers.verticalFlow(Sizing.fill(100), Sizing.content());
 
     private final List<Framebuffer> renderedFrames = new ArrayList<>();
-    private int remainingAnimationFrames;
+    public int remainingAnimationFrames;
 
     public RenderScreen(Renderable<?> renderable) {
         this.renderable = renderable;
