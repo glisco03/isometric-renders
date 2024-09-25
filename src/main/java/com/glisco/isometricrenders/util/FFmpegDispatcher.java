@@ -3,6 +3,7 @@ package com.glisco.isometricrenders.util;
 import com.glisco.isometricrenders.IsometricRenders;
 import com.glisco.isometricrenders.property.GlobalProperties;
 import net.minecraft.util.Util;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+import static com.glisco.isometricrenders.property.GlobalProperties.animationFormat;
 
 public class FFmpegDispatcher {
 
@@ -59,6 +62,25 @@ public class FFmpegDispatcher {
     public static CompletableFuture<File> assemble(ExportPathSpec target, Path sourcePath, Format format) {
         target.resolveOffset().toFile().mkdirs();
 
+        if (animationFormat == FFmpegDispatcher.Format.SERIES) {
+            try {
+                Path export = target.resolveDir();
+                if (Files.exists(export))
+                    FileUtils.deleteDirectory(export.toFile());
+                Files.createDirectory(export);
+                var files = Files.list(sourcePath)
+                        .filter(path -> path.getFileName().toString().matches("seq_\\d+\\.png"))
+                        .toList();
+                for (var file : files)
+                    Files.move(file, export.resolve(file.getFileName().toString().substring(4)));
+                return CompletableFuture.completedFuture(export.toFile());
+            }
+            catch (IOException e) {
+                IsometricRenders.LOGGER.error("Could not launch ffmpeg", e);
+                return CompletableFuture.failedFuture(e);
+            }
+        }
+
         final var defaultArgs = new ArrayList<>(List.of(new String[]{
                 "ffmpeg",
                 "-y",
@@ -105,7 +127,8 @@ public class FFmpegDispatcher {
     public enum Format {
         APNG("apng", new String[]{"-plays", "0"}),
         GIF("gif", new String[]{"-plays", "0", "-pix_fmt", "yuv420p"}),
-        MP4("mp4", new String[]{"-preset", "slow", "-crf", "20", "-pix_fmt", "yuv420p"});
+        MP4("mp4", new String[]{"-preset", "slow", "-crf", "20", "-pix_fmt", "yuv420p"}),
+        SERIES("series", new String[]{});
 
         public final String extension;
         public final String[] arguments;
@@ -117,9 +140,10 @@ public class FFmpegDispatcher {
 
         public Format next() {
             return switch (this) {
-                case MP4 -> APNG;
                 case APNG -> GIF;
                 case GIF -> MP4;
+                case MP4 -> SERIES;
+                case SERIES -> APNG;
             };
         }
     }
