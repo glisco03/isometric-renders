@@ -30,6 +30,9 @@ public record ExportPathSpec(String rootOffset, String filename, boolean ignoreS
     public File resolveFile(String extension) {
         return ImageIO.next(exportRoot().resolve(this.effectiveOffset()).resolve(this.filename + "." + extension)).toFile();
     }
+    public Path resolveDir() {
+        return ImageIO.next(exportRoot().resolve(this.effectiveOffset()).resolve(this.filename));
+    }
 
     public ExportPathSpec relocate(String newOffset) {
         return new ExportPathSpec(newOffset, this.filename, this.ignoreSaveIntoRoot);

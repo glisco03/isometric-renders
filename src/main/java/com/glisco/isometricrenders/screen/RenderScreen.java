@@ -257,6 +257,9 @@ public class RenderScreen extends BaseOwoScreen<FlowLayout> {
                 try (var builder = IsometricUI.row(rightColumn)) {
                     this.exportAnimationButton = Components.button(Translate.gui("export_animation"), button -> {
                         if (this.memoryGuard.canFit(this.estimateMemoryUsage(exportFrames)) || Screen.hasShiftDown()) {
+                            if (this.renderable.properties() instanceof DefaultPropertyBundle dpb) {
+                                dpb.setRotationOffset(0);
+                            }
                             this.remainingAnimationFrames = exportFrames;
 
                             this.client.getWindow().setFramerateLimit(Integer.parseInt(framerateField.getText()));
@@ -271,7 +274,7 @@ public class RenderScreen extends BaseOwoScreen<FlowLayout> {
                     builder.row.child(Components.button(Translate.gui("format." + animationFormat.extension), button -> {
                         animationFormat = animationFormat.next();
                         button.setMessage(Translate.gui("format." + animationFormat.extension));
-                    }).horizontalSizing(Sizing.fixed(35)));
+                    }).horizontalSizing(Sizing.fixed(40)));
                 }
 
                 IsometricUI.dynamicLabel(rightColumn, () -> {
@@ -407,8 +410,10 @@ public class RenderScreen extends BaseOwoScreen<FlowLayout> {
                     overwriteLatest.set(overwriteValue);
                     if (throwable != null) return;
 
-                    this.exportAnimationButton.setMessage(Translate.gui("converting"));
-                    this.client.execute(() -> this.notify(Translate.gui("converting_image_sequence")));
+                    if (animationFormat != FFmpegDispatcher.Format.SERIES) {
+                        this.exportAnimationButton.setMessage(Translate.gui("converting"));
+                        this.client.execute(() -> this.notify(Translate.gui("converting_image_sequence")));
+                    }
 
                     FFmpegDispatcher.assemble(
                             this.renderable.exportPath(),
