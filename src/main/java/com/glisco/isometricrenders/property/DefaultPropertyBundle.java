@@ -75,8 +75,13 @@ public class DefaultPropertyBundle implements PropertyBundle {
         this.updateAndApplyRotationOffset(modelViewStack);
     }
 
-    public float rotationOffset() {
+    public float getRotationOffset() {
         return this.rotationOffset;
+    }
+
+    public void setRotationOffset(int offset) {
+        this.rotationOffset = offset;
+        this.rotationOffsetUpdated = true;
     }
 
     protected void updateAndApplyRotationOffset(Matrix4fStack modelViewStack) {

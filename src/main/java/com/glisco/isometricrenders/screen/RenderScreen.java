@@ -257,6 +257,9 @@ public class RenderScreen extends BaseOwoScreen<FlowLayout> {
                 try (var builder = IsometricUI.row(rightColumn)) {
                     this.exportAnimationButton = Components.button(Translate.gui("export_animation"), button -> {
                         if (this.memoryGuard.canFit(this.estimateMemoryUsage(exportFrames)) || Screen.hasShiftDown()) {
+                            if (this.renderable.properties() instanceof DefaultPropertyBundle dpb) {
+                                dpb.setRotationOffset(0);
+                            }
                             this.remainingAnimationFrames = exportFrames;
 
                             this.client.getWindow().setFramerateLimit(Integer.parseInt(framerateField.getText()));
