@@ -2,6 +2,7 @@ package com.glisco.isometricrenders.property;
 
 import com.glisco.isometricrenders.render.Renderable;
 import com.glisco.isometricrenders.screen.IsometricUI;
+import com.glisco.isometricrenders.screen.RenderScreen;
 import com.glisco.isometricrenders.util.ClientRenderCallback;
 import com.glisco.isometricrenders.util.Translate;
 import io.wispforest.owo.ui.component.ButtonComponent;
@@ -75,8 +76,13 @@ public class DefaultPropertyBundle implements PropertyBundle {
         this.updateAndApplyRotationOffset(modelViewStack);
     }
 
-    public float rotationOffset() {
+    public float getRotationOffset() {
         return this.rotationOffset;
+    }
+
+    public void setRotationOffset(int offset) {
+        this.rotationOffset = offset;
+        this.rotationOffsetUpdated = true;
     }
 
     protected void updateAndApplyRotationOffset(Matrix4fStack modelViewStack) {

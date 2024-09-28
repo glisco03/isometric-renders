@@ -51,7 +51,7 @@ public abstract class DefaultRenderable<P extends DefaultPropertyBundle> impleme
         Camera camera = MinecraftClient.getInstance().getEntityRenderDispatcher().camera;
         float previousYaw = camera.getYaw(), previousPitch = camera.getPitch();
 
-        ((CameraInvoker) camera).isometric$setRotation(this.properties().rotation.get() + 180 + this.properties().rotationOffset(), this.properties().slant.get());
+        ((CameraInvoker) camera).isometric$setRotation(this.properties().rotation.get() + 180 + this.properties().getRotationOffset(), this.properties().slant.get());
         action.accept(camera);
 
         ((CameraInvoker) camera).isometric$setRotation(previousYaw, previousPitch);

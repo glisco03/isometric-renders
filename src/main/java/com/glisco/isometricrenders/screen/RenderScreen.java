@@ -97,7 +97,7 @@ public class RenderScreen extends BaseOwoScreen<FlowLayout> {
     private final FlowLayout rightColumn = Containers.verticalFlow(Sizing.fill(100), Sizing.content());
 
     private final List<Framebuffer> renderedFrames = new ArrayList<>();
-    private int remainingAnimationFrames;
+    public int remainingAnimationFrames;
 
     public RenderScreen(Renderable<?> renderable) {
         this.renderable = renderable;
@@ -251,12 +251,17 @@ public class RenderScreen extends BaseOwoScreen<FlowLayout> {
                 framerateField.setTextPredicate(s -> s.matches("\\d*"));
                 framerateField.setChangedListener(s -> {
                     if (s.isBlank()) return;
-                    exportFramerate = Integer.parseInt(s);
+                    int rate = Integer.parseInt(s);
+                    if (rate != 0)
+                        exportFramerate = rate;
                 });
 
                 try (var builder = IsometricUI.row(rightColumn)) {
                     this.exportAnimationButton = Components.button(Translate.gui("export_animation"), button -> {
                         if (this.memoryGuard.canFit(this.estimateMemoryUsage(exportFrames)) || Screen.hasShiftDown()) {
+                            if (this.renderable.properties() instanceof DefaultPropertyBundle dpb) {
+                                dpb.setRotationOffset(0);
+                            }
                             this.remainingAnimationFrames = exportFrames;
 
                             this.client.getWindow().setFramerateLimit(Integer.parseInt(framerateField.getText()));

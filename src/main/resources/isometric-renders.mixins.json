@@ -5,11 +5,12 @@
   "compatibilityLevel": "JAVA_16",
   "plugin": "com.glisco.isometricrenders.mixin.IsometricMixinPlugin",
   "client": [
+    "DrawContextMixin",
     "HandledScreenMixin",
     "LivingEntityRendererMixin",
     "MinecraftClientMixin",
     "ParticleManagerMixin",
-    "DrawContextMixin",
+    "RenderTickCounterMixin",
     "SliderWidgetInvoker",
     "TextureManagerMixin",
     "WorldRendererMixin",
