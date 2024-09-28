@@ -251,7 +251,9 @@ public class RenderScreen extends BaseOwoScreen<FlowLayout> {
                 framerateField.setTextPredicate(s -> s.matches("\\d*"));
                 framerateField.setChangedListener(s -> {
                     if (s.isBlank()) return;
-                    exportFramerate = Integer.parseInt(s);
+                    int rate = Integer.parseInt(s);
+                    if (rate != 0)
+                        exportFramerate = rate;
                 });
 
                 try (var builder = IsometricUI.row(rightColumn)) {
