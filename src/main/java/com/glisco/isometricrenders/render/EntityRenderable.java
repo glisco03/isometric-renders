@@ -13,6 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
@@ -42,7 +43,7 @@ public class EntityRenderable extends DefaultRenderable<DefaultPropertyBundle> i
 
         nbt.putString("id", type.getRegistryEntry().registryKey().getValue().toString());
 
-        final var entity = EntityType.loadEntityWithPassengers(nbt, client.world, Function.identity());
+        final var entity = EntityType.loadEntityWithPassengers(nbt, client.world, SpawnReason.LOAD, Function.identity());
         entity.updatePosition(client.player.getX(), client.player.getY(), client.player.getZ());
 
         return new EntityRenderable(entity);
@@ -55,7 +56,7 @@ public class EntityRenderable extends DefaultRenderable<DefaultPropertyBundle> i
         source.writeNbt(nbt);
         nbt.putString("id", source.getType().getRegistryEntry().registryKey().getValue().toString());
 
-        final var entity = EntityType.loadEntityWithPassengers(nbt, client.world, Function.identity());
+        final var entity = EntityType.loadEntityWithPassengers(nbt, client.world, SpawnReason.LOAD, Function.identity());
         applyToEntityAndPassengers(entity, Entity::tick);
 
         return new EntityRenderable(entity);
@@ -90,7 +91,7 @@ public class EntityRenderable extends DefaultRenderable<DefaultPropertyBundle> i
             }
 
             var offsetPos = offset.getValue();
-            client.getEntityRenderDispatcher().render(entity, offsetPos.getX(), offsetPos.getY(), offsetPos.getZ(), 0, tickDelta, matrices, vertexConsumers, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            client.getEntityRenderDispatcher().render(entity, offsetPos.getX(), offsetPos.getY(), offsetPos.getZ(), tickDelta, matrices, vertexConsumers, LightmapTextureManager.MAX_LIGHT_COORDINATE);
         });
 
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-180));

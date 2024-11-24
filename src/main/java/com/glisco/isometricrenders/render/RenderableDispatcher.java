@@ -4,8 +4,8 @@ import com.glisco.isometricrenders.IsometricRenders;
 import com.glisco.isometricrenders.mixin.access.FramebufferAccessor;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.blaze3d.systems.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.systems.VertexSorter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.SimpleFramebuffer;
@@ -40,7 +40,6 @@ public class RenderableDispatcher {
         transformer.accept(modelViewStack);
 
         renderable.properties().applyToViewMatrix(modelViewStack);
-        RenderSystem.applyModelViewMatrix();
 
         RenderSystem.backupProjectionMatrix();
         Matrix4f projectionMatrix = new Matrix4f().setOrtho(-aspectRatio, aspectRatio, -1, 1, -1000, 3000);
@@ -48,11 +47,12 @@ public class RenderableDispatcher {
         // Unproject to get the camera position for vertex sorting
         var camPos = new Vector4f(0, 0, 0, 1);
         camPos.mul(new Matrix4f(projectionMatrix).invert()).mul(new Matrix4f(modelViewStack).invert());
-        RenderSystem.setProjectionMatrix(projectionMatrix, VertexSorter.byDistance(-camPos.x, -camPos.y, -camPos.z));
+        RenderSystem.setProjectionMatrix(projectionMatrix, ProjectionType.ORTHOGRAPHIC);
 
         IsometricRenders.beginRenderableDraw();
 
-        RenderSystem.runAsFancy(() -> {
+        // TODO replacement?
+//        RenderSystem.runAsFancy(() -> {
             // Emit untransformed vertices
             renderable.emitVertices(
                     new MatrixStack(),
@@ -62,12 +62,11 @@ public class RenderableDispatcher {
 
             // --> Draw
             renderable.draw(modelViewStack);
-        });
+//        });
 
         IsometricRenders.endRenderableDraw();
 
         modelViewStack.popMatrix();
-        RenderSystem.applyModelViewMatrix();
 
         renderable.cleanUp();
         RenderSystem.restoreProjectionMatrix();
@@ -95,17 +94,21 @@ public class RenderableDispatcher {
      */
     @SuppressWarnings("ConstantConditions")
     public static Framebuffer drawIntoTexture(Renderable<?> renderable, float tickDelta, int size) {
-        final var framebuffer = new SimpleFramebuffer(size, size, true, MinecraftClient.IS_SYSTEM_MAC);
+        final var framebuffer = new SimpleFramebuffer(size, size, true);
 
         RenderSystem.enableBlend();
-        RenderSystem.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
+        RenderSystem.clear(16640);
 
         framebuffer.setClearColor(0, 0, 0, 0);
-        framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+        framebuffer.clear();
 
         framebuffer.beginWrite(true);
+        IsometricRenders.mainTargetOverride = framebuffer;
+
         drawIntoActiveFramebuffer(renderable, 1, tickDelta, matrixStack -> {});
+
         framebuffer.endWrite();
+        IsometricRenders.mainTargetOverride = null;
 
         // Release depth attachment and FBO to save on VRAM - we only need
         // the color attachment texture to later turn into an image

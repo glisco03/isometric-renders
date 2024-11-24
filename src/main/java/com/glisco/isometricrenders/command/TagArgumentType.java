@@ -28,7 +28,7 @@ public class TagArgumentType implements ArgumentType<TagArgumentType.TagArgument
     private final RegistryWrapper<Item> registryWrapper;
 
     public TagArgumentType(CommandRegistryAccess registryAccess) {
-        this.registryWrapper = registryAccess.getWrapperOrThrow(RegistryKeys.ITEM);
+        this.registryWrapper = registryAccess.getOrThrow(RegistryKeys.ITEM);
     }
 
     public static <S> TagArgument getTag(String name, CommandContext<S> context) {
@@ -46,7 +46,7 @@ public class TagArgumentType implements ArgumentType<TagArgumentType.TagArgument
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestIdentifiers(this.registryWrapper.streamTags().map(named -> named.getTag().id()), builder, String.valueOf('#'));
+        return CommandSource.suggestIdentifiers(this.registryWrapper.getTags().map(named -> named.getTag().id()), builder, String.valueOf('#'));
     }
 
     public record TagArgument(Identifier id, RegistryEntryList<Item> entries) {}

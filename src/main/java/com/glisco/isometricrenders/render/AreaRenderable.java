@@ -80,7 +80,7 @@ public class AreaRenderable extends DefaultRenderable<AreaRenderable.AreaPropert
                 vec3d = entry.entity().getLerpedPos(effectiveDelta).subtract(mesh.startPos().getX(), mesh.startPos().getY(), mesh.startPos().getZ());
             }
 
-            client.getEntityRenderDispatcher().render(entry.entity(), vec3d.x, vec3d.y, vec3d.z, entry.entity().getYaw(effectiveDelta), effectiveDelta, matrices, vertexConsumers, entry.light());
+            client.getEntityRenderDispatcher().render(entry.entity(), vec3d.x, vec3d.y, vec3d.z, effectiveDelta, matrices, vertexConsumers, entry.light());
             super.draw(RenderSystem.getModelViewMatrix());
         });
 

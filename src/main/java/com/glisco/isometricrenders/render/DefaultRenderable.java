@@ -32,7 +32,6 @@ public abstract class DefaultRenderable<P extends DefaultPropertyBundle> impleme
         var modelView = RenderSystem.getModelViewStack();
         modelView.pushMatrix();
         modelView.mul(transform);
-        RenderSystem.applyModelViewMatrix();
 
         var client = MinecraftClient.getInstance();
         this.withParticleCamera(camera -> {
@@ -44,7 +43,6 @@ public abstract class DefaultRenderable<P extends DefaultPropertyBundle> impleme
         });
 
         modelView.popMatrix();
-        RenderSystem.applyModelViewMatrix();
     }
 
     protected void withParticleCamera(Consumer<Camera> action) {

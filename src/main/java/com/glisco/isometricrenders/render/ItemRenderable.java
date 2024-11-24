@@ -9,12 +9,13 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4fStack;
 
@@ -54,9 +55,9 @@ public class ItemRenderable extends DefaultRenderable<DefaultPropertyBundle> {
     public void prepare() {
         var itemRenderer = MinecraftClient.getInstance().getItemRenderer();
         if (this.stack.isOf(Items.TRIDENT)) {
-            currentModel = itemRenderer.getModels().getModelManager().getModel(ModelIdentifier.ofVanilla("trident", "inventory"));
+            currentModel = MinecraftClient.getInstance().getBakedModelManager().getModel(ModelIdentifier.ofInventoryVariant(Identifier.of("trident")));
         } else if (this.stack.isOf(Items.SPYGLASS)) {
-            currentModel = itemRenderer.getModels().getModelManager().getModel(ModelIdentifier.ofVanilla("spyglass", "inventory"));
+            currentModel = MinecraftClient.getInstance().getBakedModelManager().getModel(ModelIdentifier.ofInventoryVariant(Identifier.of("spyglass")));
         } else {
             currentModel = itemRenderer.getModel(this.stack, MinecraftClient.getInstance().world, null, 0);
         }
