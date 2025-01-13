@@ -30,7 +30,7 @@ public class IsometricChannel extends ExoCommandChannel {
                     final var renderable = new ItemRenderable(stack);
 
                     var screen = new RenderScreen(renderable);
-                    setupItem(renderable, client.getItemRenderer().getModel(stack, null, null, 0).hasDepth());
+//                    setupItem(renderable, client.getItemRenderer().getModel(stack, null, null, 0).hasDepth());
 
                     screen.setExportCallback(file -> send(Exo.join("exported", id.toString(), file.getAbsolutePath()), port));
                     screen.scheduleCapture();

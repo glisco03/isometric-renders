@@ -36,9 +36,9 @@ public abstract class DefaultRenderable<P extends DefaultPropertyBundle> impleme
         var client = MinecraftClient.getInstance();
         this.withParticleCamera(camera -> {
             client.particleManager.renderParticles(
-                    client.gameRenderer.getLightmapTextureManager(),
-                    camera,
-                    tickDelta
+                camera,
+                tickDelta,
+                MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers()
             );
         });
 

@@ -71,7 +71,7 @@ public class EntityRenderable extends DefaultRenderable<DefaultPropertyBundle> i
     public void emitVertices(MatrixStack matrices, VertexConsumerProvider vertexConsumers, float tickDelta) {
         matrices.push();
 
-        matrices.translate(0, 0.1 + this.entity.getHeight() * -0.5d, 0);
+        matrices.translate(0, -.5 * this.entity.getHeight(), 0);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
 
         var properties = this.properties();
@@ -91,8 +91,14 @@ public class EntityRenderable extends DefaultRenderable<DefaultPropertyBundle> i
             }
 
             var offsetPos = offset.getValue();
+            matrices.push();
             client.getEntityRenderDispatcher().render(entity, offsetPos.getX(), offsetPos.getY(), offsetPos.getZ(), tickDelta, matrices, vertexConsumers, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            matrices.pop();
         });
+
+        if (vertexConsumers instanceof VertexConsumerProvider.Immediate immediate) {
+            immediate.draw();
+        }
 
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-180));
         matrices.translate(0, 1.65, 0);

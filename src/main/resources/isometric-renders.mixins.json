@@ -19,6 +19,7 @@
     "access.CameraInvoker",
     "access.DefaultPosArgumentAccessor",
     "access.FramebufferAccessor",
+    "access.ItemRenderStateAccessor",
     "access.NativeImageInvoker",
     "access.ParticleManagerAccessor"
   ],

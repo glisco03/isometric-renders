@@ -64,7 +64,7 @@ public class BlockStateRenderable extends DefaultRenderable<DefaultPropertyBundl
         matrices.push();
         matrices.translate(-0.5, -0.5, -0.5);
 
-        if (this.state.getRenderType() != BlockRenderType.ENTITYBLOCK_ANIMATED) {
+        if (this.state.getRenderType() != BlockRenderType.INVISIBLE) {
             this.client.getBlockRenderManager().renderBlockAsEntity(this.state, matrices, vertexConsumers, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
         }
 
